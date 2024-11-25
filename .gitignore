@@ -1,0 +1,28 @@
+# Ignore build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]ist/
+[Dd]ebug/
+[Dd]ebug/
+[Dd]bin/
+[Dd]obj/
+
+# User-specific files
+.vscode/
+.idea/
+
+# .NET Core files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# User-specific files
+*.swp
+
+# ASP.NET files
+.vs/
+.vscode/
+.idea/
+
+# Specify version
+global.json
