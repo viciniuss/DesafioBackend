@@ -50,6 +50,18 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AWSSDK.Extensions.NETCore.Setup": {
+              "target": "Package",
+              "version": "[3.7.301, )"
+            },
+            "AWSSDK.S3": {
+              "target": "Package",
+              "version": "[3.7.408.1, )"
+            },
+            "Microsoft.AspNetCore.Http.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.11, )"
@@ -118,6 +130,9 @@
             "projectReferences": {
               "D:\\Dev\\DesafioBackend\\DesafioBackend.Core\\DesafioBackend.Core.csproj": {
                 "projectPath": "D:\\Dev\\DesafioBackend\\DesafioBackend.Core\\DesafioBackend.Core.csproj"
+              },
+              "D:\\Dev\\DesafioBackend\\DesafioBackend.Infrastructure\\DesafioBackend.Infrastructure.csproj": {
+                "projectPath": "D:\\Dev\\DesafioBackend\\DesafioBackend.Infrastructure\\DesafioBackend.Infrastructure.csproj"
               }
             }
           }
@@ -136,6 +151,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Http.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -194,6 +215,16 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Http": {
+              "target": "Package",
+              "version": "[2.2.2, )"
+            },
+            "MongoDB.Bson": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -257,9 +288,33 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AWSSDK.S3": {
+              "target": "Package",
+              "version": "[3.7.408, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Binder": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Options": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "MongoDB.Driver": {
               "target": "Package",
               "version": "[3.0.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "RabbitMQ.Client": {
               "target": "Package",
