@@ -9,7 +9,6 @@ using DesafioBackend.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurações do Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -21,7 +20,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configurações do MongoDB
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.AddSingleton<MongoDbContext>();
 
@@ -33,34 +31,29 @@ builder.Services.AddScoped<EntregadorService>();
 builder.Services.AddScoped<IMotoRepository, MotoRepository>();
 builder.Services.AddScoped<IEntregadorRepository, EntregadorRepository>();
 
-// Registro de serviços da camada Application
-builder.Services.AddApplication(); // Certifique-se de ter o método de extensão `AddApplication`
 
-// Registro da infraestrutura
+builder.Services.AddApplication(); 
+
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Adicionar controladores e serviços essenciais
-builder.Services.AddControllers(); // Adiciona suporte para controladores MVC/API
-builder.Services.AddAuthorization(); // Adiciona suporte para autorização
-builder.Services.AddAuthentication(); // Opcional: Adicione se necessário para autenticação
-
+builder.Services.AddControllers(); 
+builder.Services.AddAuthorization(); 
+builder.Services.AddAuthentication(); 
 var app = builder.Build();
 
-// Configuração do pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "DesafioBackend API V1");
-        c.RoutePrefix = string.Empty; // Torna o Swagger acessível na raiz
+        c.RoutePrefix = string.Empty; 
     });
 }
 
-app.UseHttpsRedirection(); // Força o uso de HTTPS
-app.UseAuthorization();    // Garante suporte à autorização (caso necessário)
+app.UseHttpsRedirection(); 
+app.UseAuthorization();  
 
-// Mapeamento de rotas e controladores
 app.MapControllers();
 
 app.Run();

@@ -18,7 +18,6 @@ namespace DesafioBackend.API.Controllers
             _locacaoService = locacaoService;
         }
 
-        // Cadastrar uma locação
         [HttpPost]
         public async Task<IActionResult> CriarLocacao([FromBody] Locacao locacao)
         {
@@ -28,8 +27,6 @@ namespace DesafioBackend.API.Controllers
             var locacaoCriada = await _locacaoService.CriarLocacaoAsync(locacao.EntregadorId, locacao.MotoId, locacao.DataInicio);
             return CreatedAtAction(nameof(ObterLocacaoPorId), new { id = locacaoCriada.Id }, locacaoCriada);
         }
-
-        // Obter locações por entregador
         [HttpGet("entregador/{entregadorId}")]
         public async Task<IActionResult> ObterLocacoesPorEntregadorId([FromRoute] string entregadorId)
         {
@@ -37,7 +34,6 @@ namespace DesafioBackend.API.Controllers
             return Ok(locacoes);
         }
 
-        // Obter locação por ID
         [HttpGet("{id}")]
         public async Task<IActionResult> ObterLocacaoPorId([FromRoute] string id)
         {
@@ -48,7 +44,6 @@ namespace DesafioBackend.API.Controllers
             return Ok(locacao);
         }
 
-        // Finalizar locação
         [HttpPut("{id}/finalizar")]
         public async Task<IActionResult> FinalizarLocacao([FromRoute] string id)
         {

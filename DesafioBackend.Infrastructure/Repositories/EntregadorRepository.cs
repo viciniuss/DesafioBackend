@@ -43,8 +43,6 @@ namespace DesafioBackend.Infrastructure.Repositories
 
         public async Task UpdateCNHImageAsync(string id, string imageUrl)
         {
-
-            // var objectId = new ObjectId(id);
             var filter = Builders<Entregador>.Filter.Eq(e => e.Id, id);
             var update = Builders<Entregador>.Update.Set(e => e.ImagemCNH, imageUrl);
             await _collection.UpdateOneAsync(filter, update);

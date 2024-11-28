@@ -9,14 +9,14 @@ namespace DesafioBackend.Core.Models
         [BsonId]
         public ObjectId Id { get; set; }
 
-        public ObjectId EntregadorId { get; set; } // Relacionado ao entregador
+        public ObjectId EntregadorId { get; set; } 
 
-        public ObjectId MotoId { get; set; } // Relacionado à moto
+        public ObjectId MotoId { get; set; } 
 
         public DateTime DataInicio { get; set; }
 
-        public DateTime? DataFim { get; set; } // Pode ser nulo se ainda estiver em andamento
+        public DateTime? DataFim { get; set; } 
 
-        public string Status { get; set; } // Ex: "Ativa", "Concluída", "Cancelada"
+        public string Status { get; set; } 
     }
 }

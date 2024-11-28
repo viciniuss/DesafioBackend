@@ -21,7 +21,7 @@ public class S3StorageService
     public async Task<string> UploadFileAsync(IFormFile file)
     {
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var bucketName = "desafio-backend-s3"; // Substitua com o nome do seu bucket
+        var bucketName = "desafio-backend-s3"; 
 
         using (var stream = file.OpenReadStream())
         {
@@ -37,7 +37,7 @@ public class S3StorageService
 
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
             {
-                // Retorna a URL pública do arquivo no S3
+                
                 return $"https://{bucketName}.s3.amazonaws.com/{fileName}";
             }
         }

@@ -52,18 +52,15 @@ namespace DesafioBackend.API.Controllers
         [HttpPost("{id}/upload-cnh")]
         public async Task<IActionResult> UploadCNHAsync(string id, IFormFile file)
         {
-            // Verifica se o arquivo foi enviado
             if (file == null || file.Length == 0)
                 return BadRequest("Nenhum arquivo enviado.");
 
-            // Verifica a extensão do arquivo
             var validExtensions = new[] { ".png", ".bmp" };
             var fileExtension = Path.GetExtension(file.FileName).ToLower();
 
             if (!validExtensions.Contains(fileExtension))
                 return BadRequest("Somente arquivos PNG ou BMP são permitidos.");
 
-            // Chama o serviço para fazer o upload no S3 (ou outro serviço de storage)
             var imageUrl = await _service.UploadCNHAsync(id, file);
 
             if (string.IsNullOrEmpty(imageUrl))

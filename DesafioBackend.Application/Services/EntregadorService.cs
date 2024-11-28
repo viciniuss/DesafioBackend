@@ -58,16 +58,14 @@ namespace DesafioBackend.Application.Services
             {
                 BucketName = "seu-bucket-s3",
                 FilePath = filePath,
-                Key = $"cnhs/{id}/{cnhFile.FileName}",  // Usar o ID do entregador no caminho do arquivo
+                Key = $"cnhs/{id}/{cnhFile.FileName}", 
                 ContentType = cnhFile.ContentType
             };
 
             await fileTransferUtility.UploadAsync(uploadRequest);
 
-            // Obter URL pública do arquivo no S3
             var imageUrl = $"https://seu-bucket-s3.s3.amazonaws.com/cnhs/{id}/{cnhFile.FileName}";
 
-            // Atualizar a URL da imagem no banco de dados
             await _repository.UpdateCNHImageAsync(id, imageUrl);
 
             return imageUrl;

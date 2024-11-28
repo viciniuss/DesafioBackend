@@ -18,15 +18,11 @@ namespace DesafioBackend.Infrastructure.Context
             var client = new MongoClient(conn);
             _database = client.GetDatabase(db);
 
-             // Log para verificar o nome do banco
-            Console.WriteLine($"Conectado ao MongoDB. Banco de dados: {mongoDbSettings.Value.DatabaseName}");
         }
 
          public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
             return _database.GetCollection<T>(collectionName);
         }
-
-        // public IMongoCollection<Moto> Motos => _database.GetCollection<Moto>("Moto");
     }
 }
