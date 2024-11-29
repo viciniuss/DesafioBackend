@@ -1,11 +1,7 @@
-using DesafioBackend.Core.Interfaces;
 using DesafioBackend.Core.Models;
+using DesafioBackend.Core.Interfaces;
 using DesafioBackend.Infrastructure.Context;
-using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DesafioBackend.Infrastructure.Repositories
 {
@@ -18,33 +14,26 @@ namespace DesafioBackend.Infrastructure.Repositories
             _collection = context.GetCollection<Locacao>("Locacao");
         }
 
-        public async Task<Locacao> CriarLocacaoAsync(Locacao locacao)
+        public async Task<IEnumerable<Locacao>> GetAllAsync()
+        {
+            return await _collection.Find(_ => true).ToListAsync();
+        }
+
+        public async Task<Locacao> GetByIdAsync(string id)
+        {
+            return await _collection.Find(l => l.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task CreateAsync(Locacao locacao)
         {
             await _collection.InsertOneAsync(locacao);
-            return locacao;
         }
 
-        public async Task<List<Locacao>> ObterLocacoesPorEntregadorIdAsync(ObjectId entregadorId)
+        public async Task UpdateDevolucaoAsync(string id, DateTime dataDevolucao)
         {
-            var filter = Builders<Locacao>.Filter.Eq(l => l.EntregadorId, entregadorId);
-            return await _collection.Find(filter).ToListAsync();
-        }
-
-        public async Task<Locacao> ObterLocacaoPorIdAsync(ObjectId locacaoId)
-        {
-            var filter = Builders<Locacao>.Filter.Eq(l => l.Id, locacaoId);
-            return await _collection.Find(filter).FirstOrDefaultAsync();
-        }
-
-        public async Task<bool> AtualizarLocacaoAsync(ObjectId locacaoId, Locacao locacaoAtualizada)
-        {
-            var filter = Builders<Locacao>.Filter.Eq(l => l.Id, locacaoId);
-            var update = Builders<Locacao>.Update
-                .Set(l => l.DataFim, locacaoAtualizada.DataFim)
-                .Set(l => l.Status, locacaoAtualizada.Status);
-
-            var result = await _collection.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
+            var filter = Builders<Locacao>.Filter.Eq(l => l.Id, id);
+            var update = Builders<Locacao>.Update.Set(l => l.DataDevolucao, dataDevolucao);
+            await _collection.UpdateOneAsync(filter, update);
         }
     }
 }

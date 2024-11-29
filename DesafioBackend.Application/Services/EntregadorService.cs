@@ -1,41 +1,27 @@
-using Amazon.S3;
-using Amazon.S3.Transfer;
-using DesafioBackend.Core.Models;
-using DesafioBackend.Core.Interfaces;
-using DesafioBackend.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Http;
-using System.IO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using DesafioBackend.Core.Interfaces;
+using DesafioBackend.Core.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace DesafioBackend.Application.Services
 {
-    public interface IEntregadorService
-    {
-        Task<string> UploadCNHAsync(string id, IFormFile cnhFile);
-    }
-    public class EntregadorService : IEntregadorService
+
+    public class EntregadorService
     {
         private readonly IEntregadorRepository _repository;
-        private readonly IAmazonS3 _storageService;
+        private readonly string _localDirectory = Path.Combine(Directory.GetCurrentDirectory(), "CNHImages");
 
-        public EntregadorService(IEntregadorRepository repository, IAmazonS3 storageService)
+        public EntregadorService(IEntregadorRepository repository)
         {
             _repository = repository;
-            _storageService = storageService;
-        }
 
-        public Task<IEnumerable<Entregador>> GetAllAsync()
-        {
-            return _repository.GetAllAsync();
-        }
-
-        public Task<Entregador> GetByIdAsync(string id)
-        {
-            return _repository.GetByIdAsync(id);
-        }
-        public Task CreateAsync(Entregador entregador)
-        {
-            return _repository.CreateAsync(entregador);
+            if (!Directory.Exists(_localDirectory))
+            {
+                Directory.CreateDirectory(_localDirectory);
+            }
         }
 
         public async Task<string> UploadCNHAsync(string id, IFormFile cnhFile)
@@ -46,37 +32,37 @@ namespace DesafioBackend.Application.Services
                 throw new Exception("A imagem da CNH deve ser PNG ou BMP.");
             }
 
-            // Enviar o arquivo para o S3
-            var filePath = Path.Combine(Path.GetTempPath(), cnhFile.FileName);
+            // Criar o caminho completo para salvar o arquivo localmente
+            var fileName = $"{id}_{cnhFile.FileName}";
+            var filePath = Path.Combine(_localDirectory, fileName);
+
+            // Salvar o arquivo no disco local
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await cnhFile.CopyToAsync(stream);
             }
 
-            var fileTransferUtility = new TransferUtility(_storageService);
-            var uploadRequest = new TransferUtilityUploadRequest
-            {
-                BucketName = "seu-bucket-s3",
-                FilePath = filePath,
-                Key = $"cnhs/{id}/{cnhFile.FileName}", 
-                ContentType = cnhFile.ContentType
-            };
+            // Atualizar o campo ImagemCNH no banco de dados
+            await _repository.UpdateCNHImageAsync(id, fileName);
 
-            await fileTransferUtility.UploadAsync(uploadRequest);
-
-            var imageUrl = $"https://seu-bucket-s3.s3.amazonaws.com/cnhs/{id}/{cnhFile.FileName}";
-
-            await _repository.UpdateCNHImageAsync(id, imageUrl);
-
-            return imageUrl;
+            return fileName; // Retorna o nome do arquivo salvo
+        }
+        public Task<Entregador> GetByIdAsync(string id)
+        {
+            return _repository.GetByIdAsync(id);
         }
 
+        public Task CreateAsync(Entregador entregador)
+        {
+            return _repository.CreateAsync(entregador);
+        }
 
         public async Task<bool> CNPJExistsAsync(string cnpj)
         {
             var entregadores = await _repository.GetAllAsync();
             return entregadores.Any(e => e.CNPJ == cnpj);
         }
+
         public async Task<bool> CNHExistsAsync(string numeroCNH)
         {
             var entregadores = await _repository.GetAllAsync();

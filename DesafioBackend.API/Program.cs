@@ -1,11 +1,11 @@
-using Amazon.S3;
-using DesafioBackend.Application;
+
 using DesafioBackend.Application.Services;
 using DesafioBackend.Core.Interfaces;
 using DesafioBackend.Infrastructure;
 using DesafioBackend.Infrastructure.Repositories;
 using DesafioBackend.Infrastructure.Config;
 using DesafioBackend.Infrastructure.Context;
+using DesafioBackend.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,22 +23,22 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.AddSingleton<MongoDbContext>();
 
-builder.Services.AddAWSService<IAmazonS3>();
-builder.Services.AddScoped<S3StorageService>();
+
+builder.Services.AddScoped<MotoService>();
 builder.Services.AddScoped<EntregadorService>();
-
-
 builder.Services.AddScoped<IMotoRepository, MotoRepository>();
 builder.Services.AddScoped<IEntregadorRepository, EntregadorRepository>();
+builder.Services.AddScoped<ILocacaoRepository, LocacaoRepository>();
+builder.Services.AddScoped<ILocacaoService, LocacaoService>();
 
-
-builder.Services.AddApplication(); 
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers(); 
 builder.Services.AddAuthorization(); 
 builder.Services.AddAuthentication(); 
+builder.Services.AddSingleton<KafkaProducer>();
+builder.Services.AddSingleton<KafkaConsumer>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

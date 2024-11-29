@@ -115,9 +115,9 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "AWSSDK.S3": {
+            "Confluent.Kafka": {
               "target": "Package",
-              "version": "[3.7.408, )"
+              "version": "[2.6.1, )"
             },
             "Microsoft.Extensions.Configuration": {
               "target": "Package",
@@ -142,10 +142,6 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
-            },
-            "RabbitMQ.Client": {
-              "target": "Package",
-              "version": "[7.0.0, )"
             }
           },
           "imports": [

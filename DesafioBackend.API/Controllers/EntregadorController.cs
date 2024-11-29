@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using DesafioBackend.Application.Services;
 using DesafioBackend.Core.Models;
+using DesafioBackend.Infrastructure.Messaging;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -12,14 +13,16 @@ namespace DesafioBackend.API.Controllers
     public class EntregadorController : ControllerBase
     {
         private readonly EntregadorService _service;
-        private readonly S3StorageService _s3StorageService;
+        private readonly KafkaProducer _kafkaProducer;
 
-        public EntregadorController(EntregadorService service, S3StorageService s3StorageService)
+        public EntregadorController(EntregadorService service, KafkaProducer kafkaProducer)
         {
             _service = service;
-            _s3StorageService = s3StorageService;
+            _kafkaProducer = kafkaProducer;
         }
+    
 
+    // _kafkaProducer.SendMessageAsync(mensagem);
         [HttpGet("{id}")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> GetById(string id)

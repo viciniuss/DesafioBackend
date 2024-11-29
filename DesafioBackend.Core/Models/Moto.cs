@@ -9,6 +9,9 @@ namespace DesafioBackend.Core.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string id { get; set; }
 
+        [BsonElement("Identificador")]
+        public string identificador { get; set; }
+
         [BsonElement("Ano")]
         public int ano { get; set; }
 

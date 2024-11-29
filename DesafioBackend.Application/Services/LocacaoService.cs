@@ -1,57 +1,88 @@
 using DesafioBackend.Core.Interfaces;
 using DesafioBackend.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace DesafioBackend.Application.Services
 {
-    public class LocacaoService
+    public class LocacaoService : ILocacaoService
     {
-        private readonly ILocacaoRepository _repository;
+        private readonly ILocacaoRepository _locacaoRepository;
 
         public LocacaoService(ILocacaoRepository locacaoRepository)
         {
-            _repository = locacaoRepository;
+            _locacaoRepository = locacaoRepository;
         }
 
-        public async Task<Locacao> CriarLocacaoAsync(ObjectId entregadorId, ObjectId motoId, DateTime dataInicio)
+        private readonly Dictionary<int, decimal> _planos = new()
         {
-            var novaLocacao = new Locacao
+            { 7, 30.00m },
+            { 15, 28.00m },
+            { 30, 22.00m },
+            { 45, 20.00m },
+            { 50, 18.00m }
+        };
+
+        public async Task<Locacao> CriarLocacaoAsync(string entregadorId, string motoId, int plano)
+        {
+            if (!_planos.ContainsKey(plano))
+                throw new ArgumentException("Plano inválido.");
+
+            var valorDiaria = _planos[plano];
+            var dataInicio = DateTime.UtcNow.AddDays(1); // Primeiro dia após criação
+            var dataPrevisaoTermino = dataInicio.AddDays(plano);
+
+            var locacao = new Locacao
             {
+                ValorDiaria = valorDiaria,
                 EntregadorId = entregadorId,
                 MotoId = motoId,
                 DataInicio = dataInicio,
-                Status = "Ativa"
+                DataPrevisaoTermino = dataPrevisaoTermino,
+                DataTermino = dataPrevisaoTermino, // Inicialmente igual à previsão
+                CustoTotal = plano * valorDiaria
             };
 
-            return await _repository.CriarLocacaoAsync(novaLocacao);
+            await _locacaoRepository.CreateAsync(locacao);
+            return locacao;
         }
 
-        public async Task<List<Locacao>> ObterLocacoesPorEntregadorIdAsync(ObjectId entregadorId)
+        public async Task<Locacao> FinalizarLocacaoAsync(string locacaoId, DateTime dataDevolucao)
         {
-            return await _repository.ObterLocacoesPorEntregadorIdAsync(entregadorId);
-        }
+            var locacao = await _locacaoRepository.GetByIdAsync(locacaoId);
+            if (locacao == null) throw new KeyNotFoundException("Locação não encontrada.");
 
-        public async Task<Locacao> ObterLocacaoPorIdAsync(ObjectId locacaoId)
-        {
-            return await _repository.ObterLocacaoPorIdAsync(locacaoId);
-        }
+            locacao.DataDevolucao = dataDevolucao;
 
-        public async Task<bool> FinalizarLocacaoAsync(ObjectId locacaoId)
-        {
-            var locacao = await _repository.ObterLocacaoPorIdAsync(locacaoId);
-
-            if (locacao == null || locacao.Status != "Ativa")
+            if (dataDevolucao < locacao.DataPrevisaoTermino)
             {
-                return false;
+                var diasNaoUsados = (locacao.DataPrevisaoTermino - dataDevolucao).Days;
+                var multaPercentual = locacao.ValorDiaria switch
+                {
+                    30.00m => 0.20m,
+                    28.00m => 0.40m,
+                    _ => 0.00m
+                };
+
+                locacao.Multa = diasNaoUsados * locacao.ValorDiaria * multaPercentual;
+            }
+            else if (dataDevolucao > locacao.DataPrevisaoTermino)
+            {
+                var diasExtras = (dataDevolucao - locacao.DataPrevisaoTermino).Days;
+                locacao.Multa = diasExtras * 50.00m;
             }
 
-            locacao.Status = "Concluída";
-            locacao.DataFim = DateTime.Now;
+            locacao.CustoTotal += locacao.Multa;
 
-            return await _repository.AtualizarLocacaoAsync(locacaoId, locacao);
+            await _locacaoRepository.UpdateDevolucaoAsync(locacao.Id, dataDevolucao);
+            return locacao;
         }
+        public async Task<Locacao> GetByIdAsync(string id)
+        {
+            return await _locacaoRepository.GetByIdAsync(id);
+        }
+
     }
+
+
 }

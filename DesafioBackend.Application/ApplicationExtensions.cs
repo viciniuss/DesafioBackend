@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿
+using Microsoft.Extensions.DependencyInjection;
 using DesafioBackend.Application.Services; 
-using DesafioBackend.Core.Interfaces;
-using DesafioBackend.Infrastructure.Repositories; 
 
 namespace DesafioBackend.Application
 {
@@ -10,13 +9,12 @@ namespace DesafioBackend.Application
         /// <summary>
         /// 
         /// </summary>
-        public static IServiceCollection AddApplication(this IServiceCollection services)
+        public static IServiceCollection AddApplication(IServiceCollection services)
         {
  
             services.AddScoped<MotoService>();    
-            services.AddScoped<EntregadorService>();  
-            services.AddScoped<S3StorageService>();
-           
+            services.AddScoped<EntregadorService>(); 
+            services.AddScoped<LocacaoService>();         
             return services;
         }
     }
