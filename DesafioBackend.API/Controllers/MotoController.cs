@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DesafioBackend.Application.Services;
 using DesafioBackend.Core.Models;
+using DesafioBackend.Infrastructure.Messaging;
 
 namespace DesafioBackend.API.Controllers
 {
@@ -9,10 +10,12 @@ namespace DesafioBackend.API.Controllers
     public class MotoController : ControllerBase
     {
         private readonly MotoService _motoService;
+        private readonly KafkaProducer _kafkaProducer;
 
-        public MotoController(MotoService motoService)
+        public MotoController(MotoService motoService, KafkaProducer kafkaProducer)
         {
             _motoService = motoService;
+            _kafkaProducer = kafkaProducer;
         }
 
         [HttpPost]

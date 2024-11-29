@@ -1,6 +1,7 @@
 using DesafioBackend.Application.Services;
 using DesafioBackend.Core.Models;
 using DesafioBackend.Core.Interfaces;
+using DesafioBackend.Infrastructure.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,12 @@ namespace DesafioBackend.API.Controllers
     public class LocacaoController : ControllerBase
     {
         private readonly ILocacaoService _locacaoService;
+        private readonly KafkaProducer _kafkaProducer;
 
-        public LocacaoController(ILocacaoService locacaoService)
+        public LocacaoController(ILocacaoService locacaoService, KafkaProducer kafkaProducer)
         {
             _locacaoService = locacaoService;
+            _kafkaProducer = kafkaProducer;
         }
 
         [HttpPost]

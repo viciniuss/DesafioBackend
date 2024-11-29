@@ -20,17 +20,18 @@ namespace DesafioBackend.API.Controllers
             _service = service;
             _kafkaProducer = kafkaProducer;
         }
-    
 
-    // _kafkaProducer.SendMessageAsync(mensagem);
         [HttpGet("{id}")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> GetById(string id)
         {
             var entregador = await _service.GetByIdAsync(id);
             if (entregador == null)
+            {
+                _kafkaProducer.SendMessageAsync("Não encontrado");
                 return NotFound();
-
+            }
+            _kafkaProducer.SendMessageAsync("Encontrado");
             return Ok(entregador);
         }
 
